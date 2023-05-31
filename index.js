@@ -26,13 +26,19 @@ async function run() {
     await client.connect();
 
     const menuCollection = client.db("bistrroDb").collection("menu");
+    const reviewsCollection = client.db("bistrroDb").collection("reviews");
 
+    // load menu data from database
     app.get("/menu", async (req, res) => {
-      const result = await menuCollection.find().toArray()
-      res.send(result)
-    })
+      const result = await menuCollection.find().toArray();
+      res.send(result);
+    });
 
-
+    // load reviews data from database
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
