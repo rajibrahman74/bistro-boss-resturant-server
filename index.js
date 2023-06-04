@@ -28,6 +28,14 @@ async function run() {
     const menuCollection = client.db("bistrroDb").collection("menu");
     const reviewsCollection = client.db("bistrroDb").collection("reviews");
     const cartCollection = client.db("bistrroDb").collection("carts");
+    const userCollection = client.db("bistrroDb").collection("users");
+
+    // user related apis
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
 
     // load menu data from database
     app.get("/menu", async (req, res) => {
@@ -42,10 +50,8 @@ async function run() {
     });
 
     // cart collection apis
-
     app.get("/carts", async (req, res) => {
       const email = req.query.email;
-      console.log(email);
       if (!email) {
         return res.send([]);
       }
@@ -56,7 +62,6 @@ async function run() {
 
     app.post("/carts", async (req, res) => {
       const item = req.body;
-      console.log(item);
       const result = await cartCollection.insertOne(item);
       res.send(result);
     });
