@@ -21,7 +21,7 @@ const verifyJWT = (req, res, next) => {
   // bearer token
   const token = authorization.split(" ")[1];
   // verify token
-  jwt.verify(token, process.env.ACCES_TOKEN_SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN - SECRET, (err, decoded) => {
     return res
       .status(401)
       .send({ errro: true, message: "Unauthorized access" });
