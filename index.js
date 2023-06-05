@@ -31,6 +31,15 @@ async function run() {
     const cartCollection = client.db("bistrroDb").collection("carts");
     const userCollection = client.db("bistrroDb").collection("users");
 
+    // jwt token process
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCES_TOKEN_SECRET, {
+        expiresIn: "1h",
+      });
+      res.json({ token });
+    });
+
     // user related apis
 
     app.get("/users", async (req, res) => {
