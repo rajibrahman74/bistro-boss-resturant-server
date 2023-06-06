@@ -51,7 +51,7 @@ async function run() {
     const menuCollection = client.db("bistrroDb").collection("menu");
     const reviewsCollection = client.db("bistrroDb").collection("reviews");
     const cartCollection = client.db("bistrroDb").collection("carts");
-    const userCollection = client.db("bistrroDb").collection("users");
+    const paymentCollection = client.db("bistrroDb").collection("payments");
 
     // jwt token process
     app.post("/jwt", (req, res) => {
@@ -184,6 +184,19 @@ async function run() {
       res.send({
         clientSecret: paymentIntent.client_secret,
       });
+    });
+
+    // payment related api
+    app.post("/payments", verifyJWT, async (req, res) => {
+      const payment = req.body;
+      const insertResult = await paymentCollection.insertOne(payment);
+
+      const query = {
+        _id: { $in: payment.cartItems.map((id) => new ObjectId(id)) },
+      };
+      const deleteResult = await cartCollection.deleteMany(query);
+
+      res.send({ insertResult, deleteResult });
     });
 
     // Send a ping to confirm a successful connection
