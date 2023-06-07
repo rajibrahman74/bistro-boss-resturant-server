@@ -51,6 +51,7 @@ async function run() {
     const menuCollection = client.db("bistrroDb").collection("menu");
     const reviewsCollection = client.db("bistrroDb").collection("reviews");
     const cartCollection = client.db("bistrroDb").collection("carts");
+    const userCollection = client.db("bistrroDb").collection("users");
     const paymentCollection = client.db("bistrroDb").collection("payments");
 
     // jwt token process
@@ -198,6 +199,36 @@ async function run() {
 
       res.send({ insertResult, deleteResult });
     });
+
+    app.get("/admin-stats", verifyJWT, verifyAdmin, async (req, res) => {
+      const users = await userCollection.estimatedDocumentCount();
+      const products = await menuCollection.estimatedDocumentCount();
+      const orders = await paymentCollection.estimatedDocumentCount();
+
+      // best way to get sum of the price field is to use group and sum operator
+      /*
+        await paymentCollection.aggregate([
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$price' }
+            }
+          }
+        ]).toArray()
+      */
+
+      const payments = await paymentCollection.find().toArray();
+      const revenue = payments.reduce((sum, payment) => sum + payment.price, 0);
+
+      res.send({
+        revenue,
+        users,
+        products,
+        orders,
+      });
+    });
+
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
